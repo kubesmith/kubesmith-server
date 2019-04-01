@@ -39,6 +39,14 @@
   version = "v1.3.1"
 
 [[projects]]
+  digest = "1:7b5c6e2eeaa9ae5907c391a91c132abfd5c9e8a784a341b5625e750c67e6825d"
+  name = "github.com/gorilla/websocket"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "66b9c49e59c6c48f0ffce28c2d8b8a5678502c6d"
+  version = "v1.4.0"
+
+[[projects]]
   digest = "1:f5a2051c55d05548d2d4fd23d244027b59fbd943217df8aa3b5e170ac2fd6e1b"
   name = "github.com/json-iterator/go"
   packages = ["."]
@@ -108,6 +116,7 @@
   input-imports = [
     "github.com/gin-contrib/cors",
     "github.com/gin-gonic/gin",
+    "github.com/gorilla/websocket",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1
