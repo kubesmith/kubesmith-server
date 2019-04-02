@@ -4,53 +4,45 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
+	"github.com/kubesmith/kubesmith-server/src/factory"
+	"github.com/kubesmith/kubesmith-server/src/ws"
 )
-
-type Event struct {
-	Type    string      `json:"type"`
-	Payload interface{} `json:"payload"`
-}
-
-type PongEventPayload struct {
-	Type    int    `json:"type"`
-	Message string `json:"message"`
-}
 
 func checkCorsOrigin(r *http.Request) bool {
 	return true
 }
 
-func handler(w http.ResponseWriter, r *http.Request) {
+func WebsocketUpgradeHandler(server *factory.ServerFactory, c *gin.Context) {
+	// create a new websocket upgrader
 	upgrader := websocket.Upgrader{
 		ReadBufferSize:  1024,
 		WriteBufferSize: 1024,
 	}
 
+	// setup cors for the websocket upgrader
 	upgrader.CheckOrigin = checkCorsOrigin
 
-	socket, err := upgrader.Upgrade(w, r, nil)
+	// attempt to upgrade the connection to a websocket using the upgrader
+	socket, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
 		fmt.Printf("Failed to set websocket upgrade: %v\n", err)
 		return
 	}
 
-	defer socket.Close()
+	// get the hub
+	hub := server.GetHub()
 
-	for {
-		messageType, buffer, err := socket.ReadMessage()
-		if err != nil {
-			break
-		}
+	// create a new websocket hub client
+	client := ws.NewWebsocketHubClient(socket, hub)
 
-		response := Event{
-			Type: "pong",
-			Payload: PongEventPayload{
-				Type:    messageType,
-				Message: string(buffer),
-			},
-		}
+	// fake an identity
+	client.SetIdentity("kubesmith")
 
-		socket.WriteJSON(response)
-	}
+	// register this client with the hub
+	hub.Register(client)
+
+	// run the client
+	go client.Run()
 }

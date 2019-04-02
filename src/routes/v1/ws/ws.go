@@ -1,9 +1,10 @@
 package ws
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+	"github.com/kubesmith/kubesmith-server/src/factory"
+)
 
-func RegisterRoutes(group *gin.RouterGroup) {
-	group.GET("/ws", func(c *gin.Context) {
-		handler(c.Writer, c.Request)
-	})
+func RegisterRoutes(group *gin.RouterGroup, server *factory.ServerFactory) {
+	group.GET("/ws", server.WrapHandler(WebsocketUpgradeHandler))
 }

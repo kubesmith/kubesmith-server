@@ -1,8 +1,11 @@
 package builds
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+	"github.com/kubesmith/kubesmith-server/src/factory"
+)
 
-func RegisterRoutes(group *gin.RouterGroup) {
+func RegisterRoutes(group *gin.RouterGroup, server *factory.ServerFactory) {
 	builds := group.Group("/builds")
-	builds.GET("/", GetAllBuilds)
+	builds.GET("/", server.WrapHandler(GetAllBuilds))
 }
