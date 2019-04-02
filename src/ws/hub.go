@@ -1,10 +1,5 @@
 package ws
 
-import (
-	"fmt"
-	"time"
-)
-
 type WebsocketHub struct {
 	clients    map[string][]*WebsocketHubClient
 	messages   chan WebsocketMessage
@@ -27,29 +22,14 @@ func NewWebsocketHub() *WebsocketHub {
 	}
 }
 
-func (wsh *WebsocketHub) doStuff() {
-	time.Sleep(time.Second * 2)
-	wsh.Send(WebsocketMessage{
-		Broadcast: true,
-		Message:   []byte("hello world"),
-	})
-
-	go wsh.doStuff()
-}
-
 func (wsh *WebsocketHub) Run() {
-	go wsh.doStuff()
-
 	for {
 		select {
 		case client := <-wsh.register:
-			fmt.Println("registering client")
 			wsh.addClient(client)
 		case client := <-wsh.unregister:
-			fmt.Println("unregistering client")
 			wsh.removeClient(client)
 		case message := <-wsh.messages:
-			fmt.Println("processing message")
 			if message.Broadcast {
 				wsh.broadcastMessage(message.Message)
 			} else {
