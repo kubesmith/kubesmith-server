@@ -48,3 +48,19 @@
 [[constraint]]
   name = "github.com/kelseyhightower/envconfig"
   version = "1.3.0"
+
+[[constraint]]
+  name = "github.com/carldanley/go-services"
+  version = "1.0.2"
+
+[[constraint]]
+  name = "github.com/fatih/color"
+  version = "1.7.0"
+
+[[constraint]]
+  name = "github.com/jinzhu/gorm"
+  version = "1.9.2"
+
+[[constraint]]
+  name = "github.com/joho/godotenv"
+  version = "1.3.0"
