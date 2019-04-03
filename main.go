@@ -14,6 +14,7 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	_ "github.com/joho/godotenv/autoload"
 	"github.com/kubesmith/kubesmith-server/src/config"
+	"github.com/kubesmith/kubesmith-server/src/database/migrations"
 	v1 "github.com/kubesmith/kubesmith-server/src/routes/v1"
 	"github.com/kubesmith/kubesmith-server/src/server"
 	"github.com/kubesmith/kubesmith-server/src/services"
@@ -27,6 +28,7 @@ func (s sqlLogger) Print(args ...interface{}) {}
 
 func handleInterrupts() {
 	for range signalChannel {
+		services.Factory.Disconnect()
 		os.Exit(1)
 	}
 }
@@ -70,6 +72,12 @@ func main() {
 	// try connected to the dependency services
 	if err := services.Factory.Connect(); err != nil {
 		log.Println("Could not connect to services...")
+		log.Fatal(err)
+	}
+
+	// run migrations
+	if err := migrations.Run(services.GetDB()); err != nil {
+		log.Println("Could not run migrations...")
 		log.Fatal(err)
 	}
 

@@ -10,12 +10,12 @@
   version = "v1.0.2"
 
 [[projects]]
-  digest = "1:ffe9824d294da03b391f44e1ae8281281b4afc1bdaa9588c9097785e3af10cec"
-  name = "github.com/davecgh/go-spew"
-  packages = ["spew"]
+  digest = "1:76dc72490af7174349349838f2fe118996381b31ea83243812a97e5a0fd5ed55"
+  name = "github.com/dgrijalva/jwt-go"
+  packages = ["."]
   pruneopts = "UT"
-  revision = "8991bc29aa16c548c550c7ff78260e27b9ab7c73"
-  version = "v1.1.1"
+  revision = "06ea1031745cb8b3dab3f6a236daf2b0aa468b7e"
+  version = "v3.2.0"
 
 [[projects]]
   digest = "1:865079840386857c809b72ce300be7580cb50d3d3129ce11bf9aa6ca2bc1934a"
@@ -219,6 +219,14 @@
   version = "v1.0.0"
 
 [[projects]]
+  digest = "1:274f67cb6fed9588ea2521ecdac05a6d62a8c51c074c1fccc6a49a40ba80e925"
+  name = "github.com/satori/go.uuid"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "f58768cc1a7a7e77a3bd49e98cdd21419399b6a3"
+  version = "v1.2.0"
+
+[[projects]]
   branch = "master"
   digest = "1:7ab9394e38507ed6c39d8843c40152198689e6ce81235a761784fdd7bfa29f37"
   name = "github.com/streadway/amqp"
@@ -273,6 +281,14 @@
   version = "v8.18.2"
 
 [[projects]]
+  digest = "1:2719571bbd6fc599300141f9d83d406f6b1b631703698c8a7e3b0e0292a85759"
+  name = "gopkg.in/gormigrate.v1"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "0c6141ae05e70da27c2216945e1c1b2d5ad4aa46"
+  version = "v1.4.0"
+
+[[projects]]
   digest = "1:4d2e5a73dc1500038e504a8d78b986630e3626dc027bc030ba5c75da257cdb96"
   name = "gopkg.in/yaml.v2"
   packages = ["."]
@@ -285,7 +301,7 @@
   analyzer-version = 1
   input-imports = [
     "github.com/carldanley/go-services",
-    "github.com/davecgh/go-spew/spew",
+    "github.com/dgrijalva/jwt-go",
     "github.com/fatih/color",
     "github.com/gin-contrib/cors",
     "github.com/gin-gonic/gin",
@@ -295,6 +311,8 @@
     "github.com/jinzhu/gorm/dialects/mysql",
     "github.com/joho/godotenv/autoload",
     "github.com/kelseyhightower/envconfig",
+    "github.com/satori/go.uuid",
+    "gopkg.in/gormigrate.v1",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1
