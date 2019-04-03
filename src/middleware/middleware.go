@@ -6,5 +6,7 @@ import (
 )
 
 func Initialize(router *gin.Engine) {
-	router.Use(cors.Default())
+	router.Use(cors.New(cors.Config{
+		AllowAllOrigins: true,
+	}))
 }

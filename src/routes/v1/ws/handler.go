@@ -6,7 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
-	"github.com/kubesmith/kubesmith-server/src/factory"
+	"github.com/kubesmith/kubesmith-server/src/server"
 	"github.com/kubesmith/kubesmith-server/src/ws"
 )
 
@@ -14,7 +14,7 @@ func checkCorsOrigin(r *http.Request) bool {
 	return true
 }
 
-func WebsocketUpgradeHandler(server *factory.ServerFactory, c *gin.Context) {
+func WebsocketUpgradeHandler(server *server.Server, c *gin.Context) {
 	// create a new websocket upgrader
 	upgrader := websocket.Upgrader{
 		ReadBufferSize:  1024,
