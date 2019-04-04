@@ -19,7 +19,6 @@ type Account201904030129 struct {
 
 type User201904030129 struct {
 	ID          string `gorm:"index;primary_key"`
-	Email       string `gorm:"index;unique"`
 	FirstName   string `gorm:"index"`
 	LastName    string `gorm:"index"`
 	Deactivated bool   `gorm:"index"`

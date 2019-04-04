@@ -1,9 +1,11 @@
 package signup
 
 import (
+	"errors"
 	"net/http"
+	"regexp"
+	"unicode/utf8"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/gin-gonic/gin"
 	"github.com/kubesmith/kubesmith-server/src/database/models"
 	"github.com/kubesmith/kubesmith-server/src/server"
@@ -14,39 +16,64 @@ type PostData struct {
 	Password  string `json:"password" form:"password"`
 	FirstName string `json:"firstName" form:"firstName"`
 	LastName  string `json:"lastName" form:"lastName"`
-	Type      string `json:"json" form:"type"`
-}
-
-type PostError struct {
-	code    int
-	message string
-}
-
-func (e *PostError) Error() string {
-	return e.message
-}
-
-func (e *PostError) Code() int {
-	return e.code
 }
 
 type SignupPostHandler struct {
 	Data PostData
 }
 
-func (h *SignupPostHandler) Validate() *PostError {
-	return &PostError{
-		code:    http.StatusBadRequest,
-		message: "bad request",
-	}
+func (h *SignupPostHandler) IsValidEmail(email string) bool {
+	var emailRegex = regexp.MustCompile("^[a-zA-Z0-9.!#$%&'*+\\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
+
+	return len(email) <= 254 && emailRegex.MatchString(email)
 }
 
-func (h *SignupPostHandler) Process() (*models.User, *PostError) {
+func (h *SignupPostHandler) Validate() error {
+	if !h.IsValidEmail(h.Data.Email) {
+		return errors.New("email is invalid")
+	}
+
+	if utf8.RuneCountInString(h.Data.Password) < 5 {
+		return errors.New("password is invalid")
+	}
+
+	return nil
+}
+
+func (h *SignupPostHandler) AccountWithEmailExists() (bool, error) {
+	return false, nil
+}
+
+func (h *SignupPostHandler) CreateUser() (*models.User, error) {
+	return nil, nil
+}
+
+func (h *SignupPostHandler) CreateAccount(user *models.User) (*models.Account, error) {
+	return nil, nil
+}
+
+func (h *SignupPostHandler) Process() (*models.User, error) {
 	if err := h.Validate(); err != nil {
 		return nil, err
 	}
 
-	return nil, nil
+	exists, err := h.AccountWithEmailExists()
+	if err != nil {
+		return nil, err
+	} else if exists {
+		return nil, errors.New("already registered")
+	}
+
+	user, err := h.CreateUser()
+	if err != nil {
+		return nil, err
+	}
+
+	if _, err = h.CreateAccount(user); err != nil {
+		return nil, err
+	}
+
+	return user, nil
 }
 
 func SignupPost(server *server.Server, c *gin.Context) {
@@ -64,8 +91,7 @@ func SignupPost(server *server.Server, c *gin.Context) {
 
 	user, err := handler.Process()
 	if err != nil {
-		spew.Dump(err)
-		c.JSON(http.StatusBadRequest, err.Error())
+		c.JSON(400, err.Error())
 		return
 	}
 
