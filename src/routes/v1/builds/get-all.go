@@ -6,14 +6,14 @@ import (
 	"github.com/kubesmith/kubesmith-server/src/server"
 )
 
-type GetAllBuildsHandler struct{}
+type BuildsGetAllHandler struct{}
 
-func (h *GetAllBuildsHandler) Process() ([]fixtures.Build, error) {
+func (h *BuildsGetAllHandler) Process() ([]fixtures.Build, error) {
 	return fixtures.GetBuilds(), nil
 }
 
-func GetAllBuilds(server *server.Server, c *gin.Context) {
-	handler := GetAllBuildsHandler{}
+func BuildsGetAll(server *server.Server, c *gin.Context) {
+	handler := BuildsGetAllHandler{}
 
 	builds, err := handler.Process()
 	if err != nil {

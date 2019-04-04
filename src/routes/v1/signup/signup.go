@@ -1,4 +1,4 @@
-package repos
+package signup
 
 import (
 	"github.com/gin-gonic/gin"
@@ -6,6 +6,6 @@ import (
 )
 
 func RegisterRoutes(group *gin.RouterGroup, server *server.Server) {
-	repos := group.Group("/repos")
-	repos.GET("/", server.WrapHandler(ReposGetAll))
+	signup := group.Group("/signup")
+	signup.POST("/", server.WrapHandler(SignupPost))
 }

@@ -6,14 +6,14 @@ import (
 	"github.com/kubesmith/kubesmith-server/src/server"
 )
 
-type GetAllReposHandler struct{}
+type ReposGetAllHandler struct{}
 
-func (h *GetAllReposHandler) Process() ([]fixtures.Repository, error) {
+func (h *ReposGetAllHandler) Process() ([]fixtures.Repository, error) {
 	return fixtures.GetRepos(), nil
 }
 
-func GetAllRepos(server *server.Server, c *gin.Context) {
-	handler := GetAllReposHandler{}
+func ReposGetAll(server *server.Server, c *gin.Context) {
+	handler := ReposGetAllHandler{}
 
 	repos, err := handler.Process()
 	if err != nil {

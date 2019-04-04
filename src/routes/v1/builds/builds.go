@@ -7,5 +7,5 @@ import (
 
 func RegisterRoutes(group *gin.RouterGroup, server *server.Server) {
 	builds := group.Group("/builds")
-	builds.GET("/", server.WrapHandler(GetAllBuilds))
+	builds.GET("/", server.WrapHandler(BuildsGetAll))
 }

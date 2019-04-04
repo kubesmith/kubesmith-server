@@ -6,5 +6,5 @@ import (
 )
 
 func RegisterRoutes(group *gin.RouterGroup, server *server.Server) {
-	group.GET("/ws", server.WrapHandler(WebsocketUpgradeHandler))
+	group.GET("/ws", server.WrapHandler(WebsocketHandler))
 }

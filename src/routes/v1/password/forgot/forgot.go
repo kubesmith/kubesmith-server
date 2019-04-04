@@ -1,4 +1,4 @@
-package repos
+package forgot
 
 import (
 	"github.com/gin-gonic/gin"
@@ -6,6 +6,6 @@ import (
 )
 
 func RegisterRoutes(group *gin.RouterGroup, server *server.Server) {
-	repos := group.Group("/repos")
-	repos.GET("/", server.WrapHandler(ReposGetAll))
+	forgot := group.Group("/forgot")
+	forgot.POST("/", server.WrapHandler(PasswordForgotPost))
 }

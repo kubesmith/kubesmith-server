@@ -1,4 +1,4 @@
-package repos
+package reset
 
 import (
 	"github.com/gin-gonic/gin"
@@ -6,6 +6,6 @@ import (
 )
 
 func RegisterRoutes(group *gin.RouterGroup, server *server.Server) {
-	repos := group.Group("/repos")
-	repos.GET("/", server.WrapHandler(ReposGetAll))
+	reset := group.Group("/reset")
+	reset.POST("/", server.WrapHandler(PasswordResetPost))
 }

@@ -14,7 +14,7 @@ func checkCorsOrigin(r *http.Request) bool {
 	return true
 }
 
-func WebsocketUpgradeHandler(server *server.Server, c *gin.Context) {
+func WebsocketHandler(server *server.Server, c *gin.Context) {
 	// create a new websocket upgrader
 	upgrader := websocket.Upgrader{
 		ReadBufferSize:  1024,
