@@ -4,14 +4,13 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"regexp"
-	"unicode/utf8"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	"github.com/kubesmith/kubesmith-server/src/database/models"
 	"github.com/kubesmith/kubesmith-server/src/server"
 	"github.com/kubesmith/kubesmith-server/src/services"
+	"github.com/kubesmith/kubesmith-server/src/validator"
 )
 
 type PostData struct {
@@ -28,21 +27,14 @@ type PostResponse struct {
 
 type SignupPostHandler struct {
 	Data PostData
-	ctx  *gin.Context
-}
-
-func (h *SignupPostHandler) IsValidEmail(email string) bool {
-	var emailRegex = regexp.MustCompile("^[a-zA-Z0-9.!#$%&'*+\\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
-
-	return len(email) <= 254 && emailRegex.MatchString(email)
 }
 
 func (h *SignupPostHandler) Validate() error {
-	if !h.IsValidEmail(h.Data.Email) {
+	if !validator.IsValidEmail(h.Data.Email) {
 		return errors.New("email is invalid")
 	}
 
-	if utf8.RuneCountInString(h.Data.Password) < 5 {
+	if !validator.IsValidPassword(h.Data.Password) {
 		return errors.New("password is invalid")
 	}
 
@@ -145,7 +137,6 @@ func SignupPost(server *server.Server, c *gin.Context) {
 
 	handler := SignupPostHandler{
 		Data: userData,
-		ctx:  c,
 	}
 
 	response := handler.Process()
