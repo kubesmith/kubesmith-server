@@ -9,6 +9,8 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
+const AccountTypeAccount = "account"
+
 type Account struct {
 	ID                string `json:"id"`
 	UserID            string `json:"userID"`

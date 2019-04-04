@@ -2,13 +2,16 @@ package signup
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"regexp"
 	"unicode/utf8"
 
 	"github.com/gin-gonic/gin"
+	"github.com/jinzhu/gorm"
 	"github.com/kubesmith/kubesmith-server/src/database/models"
 	"github.com/kubesmith/kubesmith-server/src/server"
+	"github.com/kubesmith/kubesmith-server/src/services"
 )
 
 type PostData struct {
@@ -18,8 +21,14 @@ type PostData struct {
 	LastName  string `json:"lastName" form:"lastName"`
 }
 
+type PostResponse struct {
+	Code    int
+	Payload interface{}
+}
+
 type SignupPostHandler struct {
 	Data PostData
+	ctx  *gin.Context
 }
 
 func (h *SignupPostHandler) IsValidEmail(email string) bool {
@@ -41,39 +50,88 @@ func (h *SignupPostHandler) Validate() error {
 }
 
 func (h *SignupPostHandler) AccountWithEmailExists() (bool, error) {
-	return false, nil
+	var account models.Account
+
+	if err := services.GetDB().Where("email like ?", fmt.Sprintf("%%%s%%", h.Data.Email)).First(&account).Error; err != nil {
+		if gorm.IsRecordNotFoundError(err) {
+			return false, nil
+		}
+
+		return false, err
+	}
+
+	return true, nil
 }
 
 func (h *SignupPostHandler) CreateUser() (*models.User, error) {
-	return nil, nil
+	user := models.User{
+		FirstName: h.Data.FirstName,
+		LastName:  h.Data.LastName,
+	}
+
+	if err := services.GetDB().Create(&user).Error; err != nil {
+		return nil, err
+	}
+
+	return &user, nil
 }
 
 func (h *SignupPostHandler) CreateAccount(user *models.User) (*models.Account, error) {
-	return nil, nil
+	account := models.Account{
+		UserID:   user.ID,
+		Email:    h.Data.Email,
+		Password: h.Data.Password,
+		Type:     models.AccountTypeAccount,
+	}
+
+	if err := services.GetDB().Create(&account).Error; err != nil {
+		return nil, err
+	}
+
+	return &account, nil
 }
 
-func (h *SignupPostHandler) Process() (*models.User, error) {
+func (h *SignupPostHandler) Process() PostResponse {
 	if err := h.Validate(); err != nil {
-		return nil, err
+		return PostResponse{
+			Code:    http.StatusBadRequest,
+			Payload: err.Error(),
+		}
 	}
 
 	exists, err := h.AccountWithEmailExists()
 	if err != nil {
-		return nil, err
+		fmt.Printf("an error occurred while checking for account with email: %s\n", err.Error())
+
+		return PostResponse{
+			Code: http.StatusInternalServerError,
+		}
 	} else if exists {
-		return nil, errors.New("already registered")
+		return PostResponse{
+			Code: http.StatusConflict,
+		}
 	}
 
 	user, err := h.CreateUser()
 	if err != nil {
-		return nil, err
+		fmt.Printf("could not create user: %s\n", err.Error())
+
+		return PostResponse{
+			Code: http.StatusInternalServerError,
+		}
 	}
 
 	if _, err = h.CreateAccount(user); err != nil {
-		return nil, err
+		fmt.Printf("could not create account: %s\n", err.Error())
+
+		return PostResponse{
+			Code: http.StatusInternalServerError,
+		}
 	}
 
-	return user, nil
+	return PostResponse{
+		Code: http.StatusOK,
+	}
 }
 
 func SignupPost(server *server.Server, c *gin.Context) {
@@ -87,13 +145,13 @@ func SignupPost(server *server.Server, c *gin.Context) {
 
 	handler := SignupPostHandler{
 		Data: userData,
+		ctx:  c,
 	}
 
-	user, err := handler.Process()
-	if err != nil {
-		c.JSON(400, err.Error())
-		return
+	response := handler.Process()
+	if response.Payload != nil {
+		c.JSON(response.Code, response.Payload)
+	} else {
+		c.Status(response.Code)
 	}
-
-	c.JSON(200, user)
 }
